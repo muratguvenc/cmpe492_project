@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../../Scripts/angular.1.09.js" />
 
+var countMolecules = 0;
 function DiffusionController($scope) {
 
     var mean, stdDev, numberOfMolecules, initialX, initialY, distanceBetweenTwoCells, environmentMoleculeSize, boltzmanCoeff, 
@@ -89,10 +90,9 @@ function DiffusionController($scope) {
 	}*/
 	
 	
-	function inCellvTwo(aX,aY,bX,bY){
-		var cX = 175;
+	function inCellvTwo(bX,bY,cell){
+		var cX = 175 + 125*cell;
 		var cY = 200;
-		
 		var radius =  calculateRadius($scope.view.distanceBetweenTwoCells);
 		
 		var tempX = (bX-cX)*(bX-cX);
@@ -141,7 +141,11 @@ function DiffusionController($scope) {
 			
 			tempGaussX = generateGaussianRandom(stdDev);
 			tempGaussY = generateGaussianRandom(stdDev);
-			if(inCellvTwo(moleculesLocal[i].x , moleculesLocal[i].y , moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY))){
+			if(!inCellvTwo(moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),1)){
+		    		moleculesLocal.splice(i,1);
+					countMolecules++;
+			}
+			else if(inCellvTwo(moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),0)){
 				moleculesLocal[i].x += tempGaussX;
 				moleculesLocal[i].y += tempGaussY;
 			}else{
@@ -218,6 +222,7 @@ function DiffusionController($scope) {
         }
 
         iterate();
+		alert(countMolecules);
     };
 
 
