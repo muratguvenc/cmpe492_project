@@ -1,6 +1,8 @@
 ﻿/// <reference path="../../../Scripts/angular.1.09.js" />
 
 var countMolecules = 0;
+var localTime = 0;
+var refreshNow = 0;
 function DiffusionController($scope) {
 
     var mean, stdDev, numberOfMolecules, initialX, initialY, distanceBetweenTwoCells, environmentMoleculeSize, boltzmanCoeff, 
@@ -61,33 +63,7 @@ function DiffusionController($scope) {
         }
     };
 	
-	/*function inCell(aX,aY,bX,bY){
-		var cX = 175;
-		var cY = 200;
-		
-		var radius =  calculateRadius($scope.view.distanceBetweenTwoCells);
-		
-		var baX = bX - aX;
-        var baY = bY - aY;
-        var caX = cX - aX;
-        var caY = cY - aY;
-		
-		var a = baX * baX + baY * baY;
-        var b = baX * caX + baY * caY;
-        var c = caX * caX + caY * caY - radius * radius;
-		
-		var p = b / a;
-        var q = c / a;
-		
-		var disc = p * p - q;
-		
-		if (disc < 0) {
-            return true;
-        }else{
-			return false
-		}
-
-	}*/
+	
 	
 	
 	function inCellvTwo(bX,bY,cell){
@@ -106,29 +82,42 @@ function DiffusionController($scope) {
 		
 	}
 	
-	/*function inCellvThree(aX,aY,bX,bY){
-		var cX = 175;
-		var cY = 200;
-		
-		var radius =  calculateRadius($scope.view.distanceBetweenTwoCells);
-		
-		var dx = (bX-aX);
-		var dy = (bY-aY);
-		var a = dx * dx + dy * dy;
-		var b = 2 * (dx * (aX - cX) + dy * (aY - cY));
-		var c = cX * cX + cY * cY;
-		c += aX * aX + aY * aY;
-		c -= 2 * (cX * aX + cY * aY);
-		c -= radius * radius;
-		var bb4ac = b * b - 4 * a * c;
-		if(bb4ac<0){
-          return false;    // No collision
-		}else{
-          return true;      //Collision
-		}
-		
+	function lineInCircle(ax, ay, bx, by,cell){
+	
+		var cx = 175 +125*cell;
+		var cy = 200;
 			
-	}*/
+		var cr =  calculateRadius($scope.view.distanceBetweenTwoCells);
+		var vx = bx - ax;
+		var vy = by - ay;
+		var xdiff = ax - cx;
+		var ydiff = ay - cy;
+		var a = vx*vx + vy*vy;
+		var b = 2 * ((vx * xdiff) + (vy * ydiff));
+		var c = xdiff * xdiff + ydiff * ydiff - cr * cr;
+		var quad = b*b - (4 * a * c);
+		if (quad >= 0)
+		{
+			// An infinite collision is happening, but let's not stop here
+			var quadsqrt=Math.sqrt(quad);
+			
+			root1 = (-b - quadsqrt)/(2*a);
+			root2 = (-b + quadsqrt)/(2*a);
+			if(root1 > 1)
+				return false;	//No collision
+			if(root2 < 0)
+				return false;
+			return true;
+			
+		}
+		return false;
+}
+	
+	
+	
+	
+	
+	
 
     function iterateMolecules() {
         var moleculesLocal, stdDev, tempGaussX, tempGaussY;
@@ -141,16 +130,17 @@ function DiffusionController($scope) {
 			
 			tempGaussX = generateGaussianRandom(stdDev);
 			tempGaussY = generateGaussianRandom(stdDev);
-			if(!inCellvTwo(moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),1)){
+			//lineInCircle(moleculesLocal[i].x, moleculesLocal[i].y,moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY))
+			if(lineInCircle(moleculesLocal[i].x, moleculesLocal[i].y,moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),1)){
 		    		moleculesLocal.splice(i,1);
 					countMolecules++;
 			}
-			else if(inCellvTwo(moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),0)){
+			else if(!lineInCircle(moleculesLocal[i].x, moleculesLocal[i].y,moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),0)){//inCellvTwo(moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),0)){
 				moleculesLocal[i].x += tempGaussX;
 				moleculesLocal[i].y += tempGaussY;
 			}else{
-			    moleculesLocal[i].x -= tempGaussX;
-				moleculesLocal[i].y -= tempGaussY;
+			    //moleculesLocal[i].x -= tempGaussX;
+				//moleculesLocal[i].y -= tempGaussY;
 			}
             
         }
@@ -162,16 +152,20 @@ function DiffusionController($scope) {
 
         var moleculesLocal, numberOfMoleculesLocal, distanceBetweenTwoCellsLocal, radiusT, radiusR, temp;
 		
-		drawScaler();
+		refreshNow = 0;
+		clearPaper();
+		localTime = 0;
+		initCover();
 		
+		drawScaler();
 		distanceBetweenTwoCellsLocal = $scope.view.distanceBetweenTwoCells;
 		moleculesLocal = [];
         numberOfMoleculesLocal = $scope.view.numberOfMolecules;
 		cellRadiusLocal =  calculateRadius(distanceBetweenTwoCellsLocal);
 		
 		temp = 300 - Number(distanceBetweenTwoCellsLocal)/2;
-		drawCircle(175,200,cellRadiusLocal);		//Draw receiver cell
-		drawCircle(300,200,cellRadiusLocal);			//Draw transmitter cell
+		drawCellCircle(175,200,cellRadiusLocal);		//Draw receiver cell
+		drawCellCircle(300,200,cellRadiusLocal);		//Draw transmitter cell
         //create molecules
         for (var i = 0; i < numberOfMoleculesLocal; i++) {
             moleculesLocal.push({ x: initialX+Number(cellRadiusLocal), y: initialY });
@@ -201,28 +195,51 @@ function DiffusionController($scope) {
         var y = Math.floor(Math.random() * 400);
         drawCircle(x, y, 1);
     };
+	
+	$scope.refresh = function(){
+		refreshNow = 1;
+		clearPaper();
+		clearCover();
+		$scope.view = {
+			molecules: [],
+			iterationTime: 0.5,   //sec
+			numberOfMolecules: 100,
+			maxTime: 40000,
+			currentTime: 0,
+			distanceBetweenTwoCells: 10,
+			cellRadius: 15,
+			temperature: 310,
+			viscosity: 0.001,
+			moleculeSize: 1,
+			show:true
+		};
+		
+	};
 
     $scope.iterateSimulation = function () {
-
-        var localTime = 0;
-
+		
+        localTime = 0;
         var iterate = function () {
             clearPaper();
             iterateMolecules();
             drawAllMolecules();
             localTime += 5;
-
+			
+			
             if (localTime % 100) {
                 $scope.$apply($scope.view.currentTime = localTime / 100);
             }
-
-            if (!(localTime > 1000)) {
+			if(refreshNow == 1){
+				localTime = 0;
+				$scope.$apply($scope.view.currentTime = localTime / 100);
+			}
+            else if (!(localTime > 1000)) {
                 setTimeout(function () { iterate(); }, 50);
             }
         }
 
+		
         iterate();
-		alert(countMolecules);
     };
 
 

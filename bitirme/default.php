@@ -23,9 +23,10 @@
 				<input ng-show="view.show" style="position:absolute; left:750px; top:250px" ng-model="view.moleculeSize" />
 				
 				<span style="position:absolute; left:600px; top:50px" ng-model="view.currentTime">{{view.currentTime}}</span>
-
-				<button style="position:absolute; left:650px;" ng-click="init()">init</button>
+				
 				<button style="position:absolute; left:600px;" ng-click="iterateSimulation()">ilerle</button>
+				<button style="position:absolute; left:650px;" ng-click="init()">init</button>
+				<button style="position:absolute; left:700px;" ng-click="refresh()">yenile</button>
 			</div>
 		</div>
 	</body>
