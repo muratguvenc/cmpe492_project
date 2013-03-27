@@ -1,25 +1,29 @@
 ﻿/// <reference path="../../../Scripts/angular.1.09.js" />
 
-var countMolecules = 0;
-var localTime = 0;
-var refreshNow = 0;
+
 function DiffusionController($scope) {
 
     var mean, stdDev, numberOfMolecules, initialX, initialY, distanceBetweenTwoCells, environmentMoleculeSize, boltzmanCoeff, 
-		temperature, viscosity, moleculeSize, cellRadius;
-
-    mean = 0;
+		temperature, viscosity, moleculeSize, cellRadius, inputStream, molecules;
+	
+	var countMolecules = 0;
+	var localTime = 0;
+	var refreshNow = 0;
+    
+	molecules = [];
+	mean = 0;
     numberOfMolecules = 100;
     initialX = 176;
     initialY = 200;
-	distanceBetweenTwoCells = 10;	//mikrometre olsun
+	distanceBetweenTwoCells = 10;	//mikrometre
 	cellRadius = 15;
     environmentMoleculeSize = 1.32; //nanometer
     boltzmanCoeff = 0.000086173324;
     temperature = 310; //kelvin
     viscosity = 0.001; // ( kg / (s * m) )
     moleculeSize = 1;   //nanometer
-
+	inputStream = "1";
+	
     $scope.view = {
         molecules: [],
         iterationTime: 0.5,   //sec
@@ -31,6 +35,7 @@ function DiffusionController($scope) {
 		temperature: 310,
 		viscosity: 0.001,
 		moleculeSize: 1,
+		inputStream: "1",
         show:true
     };
 
@@ -113,31 +118,25 @@ function DiffusionController($scope) {
 		return false;
 }
 	
-	
-	
-	
-	
-	
-
     function iterateMolecules() {
-        var moleculesLocal, stdDev, tempGaussX, tempGaussY;
+        var stdDev, tempGaussX, tempGaussY;
 
         stdDev = caculatePropagationStandardDeviation($scope.view.iterationTime);
 
-        moleculesLocal = $scope.view.molecules;
+        molecules = $scope.view.molecules;
 
-        for (var i = 0; i < moleculesLocal.length; i++) {
+        for (var i = 0; i < molecules.length; i++) {
 			
 			tempGaussX = generateGaussianRandom(stdDev);
 			tempGaussY = generateGaussianRandom(stdDev);
 			//lineInCircle(moleculesLocal[i].x, moleculesLocal[i].y,moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY))
-			if(lineInCircle(moleculesLocal[i].x, moleculesLocal[i].y,moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),1)){
-		    		moleculesLocal.splice(i,1);
+			if(lineInCircle(molecules[i].x, molecules[i].y,molecules[i].x+Number(tempGaussX), molecules[i].y+Number(tempGaussY),1)){
+		    		molecules.splice(i,1);
 					countMolecules++;
 			}
-			else if(!lineInCircle(moleculesLocal[i].x, moleculesLocal[i].y,moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),0)){//inCellvTwo(moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),0)){
-				moleculesLocal[i].x += tempGaussX;
-				moleculesLocal[i].y += tempGaussY;
+			else if(!lineInCircle(molecules[i].x, molecules[i].y,molecules[i].x+Number(tempGaussX), molecules[i].y+Number(tempGaussY),0)){//inCellvTwo(moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),0)){
+				molecules[i].x += tempGaussX;
+				molecules[i].y += tempGaussY;
 			}else{
 			    //moleculesLocal[i].x -= tempGaussX;
 				//moleculesLocal[i].y -= tempGaussY;
@@ -145,12 +144,13 @@ function DiffusionController($scope) {
             
         }
 
-        $scope.view.molecules = moleculesLocal;
+        $scope.view.molecules = molecules;
     };
 
     $scope.init = function () {
 
-        var moleculesLocal, numberOfMoleculesLocal, distanceBetweenTwoCellsLocal, radiusT, radiusR, temp;
+        var numberOfMoleculesLocal, distanceBetweenTwoCellsLocal, radiusT, radiusR, temp, cellRadiusLocal;
+		var inputStreamFirst;
 		
 		refreshNow = 0;
 		clearPaper();
@@ -159,7 +159,12 @@ function DiffusionController($scope) {
 		
 		drawScaler();
 		distanceBetweenTwoCellsLocal = $scope.view.distanceBetweenTwoCells;
-		moleculesLocal = [];
+		temperature = $scope.view.temperature;
+		viscosity = $scope.view.viscosity;
+		inputStream = $scope.view.inputStream;
+		inputStreamFirst = inputStream.split("",1);
+		
+		moleculeSize = $scope.view.moleculeSize;
         numberOfMoleculesLocal = $scope.view.numberOfMolecules;
 		cellRadiusLocal =  calculateRadius(distanceBetweenTwoCellsLocal);
 		
@@ -167,11 +172,13 @@ function DiffusionController($scope) {
 		drawCellCircle(175,200,cellRadiusLocal);		//Draw receiver cell
 		drawCellCircle(300,200,cellRadiusLocal);		//Draw transmitter cell
         //create molecules
-        for (var i = 0; i < numberOfMoleculesLocal; i++) {
-            moleculesLocal.push({ x: initialX+Number(cellRadiusLocal), y: initialY });
-        }
+		if(inputStreamFirst[0]==1){
+			for (var i = 0; i < numberOfMoleculesLocal; i++) {
+				molecules.push({ x: initialX+Number(cellRadiusLocal), y: initialY });
+			}
+		}
 
-        $scope.view.molecules = moleculesLocal;
+        $scope.view.molecules = molecules;
         $scope.view.show = false;
 
         initRaphael();
@@ -211,34 +218,50 @@ function DiffusionController($scope) {
 			temperature: 310,
 			viscosity: 0.001,
 			moleculeSize: 1,
+			inputStream: 1,
 			show:true
 		};
 		
 	};
 
     $scope.iterateSimulation = function () {
-		
+		var inputStreamArr = [];
+		inputStreamArr = inputStream.split("");
         localTime = 0;
+		var distanceBetweenTwoCellsLocal, cellRadiusLocal, numberOfMoleculesLocal, index;
+		index = 1;
+		distanceBetweenTwoCellsLocal = $scope.view.distanceBetweenTwoCells;
+		cellRadiusLocal =  calculateRadius(distanceBetweenTwoCellsLocal);
+		numberOfMoleculesLocal = $scope.view.numberOfMolecules;
+		
         var iterate = function () {
             clearPaper();
             iterateMolecules();
             drawAllMolecules();
             localTime += 5;
 			
-			
             if (localTime % 100) {
                 $scope.$apply($scope.view.currentTime = localTime / 100);
             }
+			if(localTime % 1000 == 0){
+				if(Number(inputStreamArr[index])== 1){
+					for (var i = 0; i < numberOfMoleculesLocal; i++) {
+							molecules.push({ x: initialX+Number(cellRadiusLocal), y: initialY });
+					}
+					$scope.view.molecules = molecules;
+					index++;
+				}
+				else{
+				}
+			}
 			if(refreshNow == 1){
 				localTime = 0;
 				$scope.$apply($scope.view.currentTime = localTime / 100);
 			}
-            else if (!(localTime > 1000)) {
+            else if (!(localTime > 1000*inputStreamArr.length)) {
                 setTimeout(function () { iterate(); }, 50);
             }
         }
-
-		
         iterate();
     };
 
