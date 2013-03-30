@@ -4,7 +4,7 @@
 function DiffusionController($scope) {
 
     var mean, stdDev, numberOfMolecules, initialX, initialY, distanceBetweenTwoCells, environmentMoleculeSize, boltzmanCoeff, 
-		temperature, viscosity, moleculeSize, cellRadius, inputStream, molecules;
+		temperature, viscosity, moleculeSize, cellRadius, inputStream, molecules, threshold;
 	
 	var countMolecules = 0;
 	var localTime = 0;
@@ -22,7 +22,9 @@ function DiffusionController($scope) {
     temperature = 310; //kelvin
     viscosity = 0.001; // ( kg / (s * m) )
     moleculeSize = 1;   //nanometer
+	threshold = 30;
 	inputStream = "1";
+	outputStream = "";
 	
     $scope.view = {
         molecules: [],
@@ -35,7 +37,9 @@ function DiffusionController($scope) {
 		temperature: 310,
 		viscosity: 0.001,
 		moleculeSize: 1,
+		threshold: 30,
 		inputStream: "1",
+		outputStream: "",
         show:true
     };
 
@@ -166,6 +170,7 @@ function DiffusionController($scope) {
 		
 		moleculeSize = $scope.view.moleculeSize;
         numberOfMoleculesLocal = $scope.view.numberOfMolecules;
+		numberOfMolecules = $scope.view.numberOfMolecules;
 		cellRadiusLocal =  calculateRadius(distanceBetweenTwoCellsLocal);
 		
 		temp = 300 - Number(distanceBetweenTwoCellsLocal)/2;
@@ -207,6 +212,7 @@ function DiffusionController($scope) {
 		refreshNow = 1;
 		clearPaper();
 		clearCover();
+		molecules = [];
 		$scope.view = {
 			molecules: [],
 			iterationTime: 0.5,   //sec
@@ -218,12 +224,14 @@ function DiffusionController($scope) {
 			temperature: 310,
 			viscosity: 0.001,
 			moleculeSize: 1,
-			inputStream: 1,
+			threshold: 30,
+			inputStream: "1",
+			outputStream: "",
 			show:true
 		};
 		
 	};
-
+	
     $scope.iterateSimulation = function () {
 		var inputStreamArr = [];
 		inputStreamArr = inputStream.split("");
@@ -238,21 +246,41 @@ function DiffusionController($scope) {
             clearPaper();
             iterateMolecules();
             drawAllMolecules();
-            localTime += 5;
-			
+            localTime += 5;	
             if (localTime % 100) {
                 $scope.$apply($scope.view.currentTime = localTime / 100);
+				$scope.$apply(threshold = $scope.view.threshold);
             }
 			if(localTime % 1000 == 0){
+				alert(threshold+" - "+countMolecules);
 				if(Number(inputStreamArr[index])== 1){
 					for (var i = 0; i < numberOfMoleculesLocal; i++) {
 							molecules.push({ x: initialX+Number(cellRadiusLocal), y: initialY });
+					}
+					if(countMolecules >= numberOfMolecules*(Number(threshold)/100)){
+						outputStream += 1;
+						countMolecules = 0;
+					}
+					else{
+						outputStream += 0;
+						countMolecules = 0;
 					}
 					$scope.view.molecules = molecules;
 					index++;
 				}
 				else{
+					index++;
+					if(countMolecules >= numberOfMolecules*(Number(threshold)/100)){
+						outputStream += 1;
+						countMolecules = 0;
+					}
+					else{
+						outputStream += 0;
+						countMolecules = 0;
+					}
 				}
+				$scope.$apply($scope.view.outputStream = outputStream);
+				alert(threshold+" - "+countMolecules);
 			}
 			if(refreshNow == 1){
 				localTime = 0;

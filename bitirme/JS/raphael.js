@@ -29,7 +29,7 @@
 }*/
 
 
-var paper, drawings;
+var paper,coverPaper ,drawings;
 
 
 function initRaphael () {
@@ -37,8 +37,11 @@ function initRaphael () {
     paper = Raphael(0, 0, 600, 400);    
 }
 
+function initCover (){
+	coverPaper = Raphael(0, 0, 600, 400); 
+}
+
 function drawCircle(x,y,r) {
-    // Creates circle at x = 50, y = 40, with radius 10
     var circle = paper.circle(x, y, r);
     // Sets the fill attribute of the circle to red (#f00)
     circle.attr("fill", "#f00");
@@ -47,19 +50,32 @@ function drawCircle(x,y,r) {
     circle.attr("stroke", "#000");
 }
 
+function drawCellCircle(x,y,r) {
+	var circle = coverPaper.circle(x, y, r);
+    // Sets the fill attribute of the circle to red (#f00)
+    circle.attr("fill", "#f00");
+
+    // Sets the stroke attribute of the circle to white
+    circle.attr("stroke", "#000");
+}
+
 function drawScaler() {
-	var scaler = paper.path("M 400 40 l 0 15 l 0 -5 l 50 0 l 0 5 l 0 -15 l 0 10 l 50 0 l 0 -10 l 0 10 l 50 0 l 0 -10 z");
-	var inScaler = paper.path("M 450 40 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 ");
-	var text1 = paper.text(425, 58, '1 cm').attr({"font-size": 11,"font-weight": "bold"});
-	var text2 = paper.text(560, 45, 'µm').attr({"font-size": 11,"font-weight": "bold"});
+	var scaler = coverPaper.path("M 400 40 l 0 15 l 0 -5 l 50 0 l 0 5 l 0 -15 l 0 10 l 50 0 l 0 -10 l 0 10 l 50 0 l 0 -10 z");
+	var inScaler = coverPaper.path("M 450 40 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 ");
+	var text1 = coverPaper.text(425, 58, '1 cm').attr({"font-size": 11,"font-weight": "bold"});
+	var text2 = coverPaper.text(560, 45, 'µm').attr({"font-size": 11,"font-weight": "bold"});
 	var text3;
 	for (var i = 0; i<4; i+=1){
-		paper.text(400+i*50, 30, i*100).attr({"font-size": 11,"font-weight": "bold"});
+		coverPaper.text(400+i*50, 30, i*100).attr({"font-size": 11,"font-weight": "bold"});
 	}
 }
 
 function clearPaper() {
     paper.clear();
+}
+
+function clearCover() {
+	coverPaper.clear();
 }
 
 window.onload = function () {
