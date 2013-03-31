@@ -59,14 +59,13 @@ function drawCellCircle(x,y,r) {
     circle.attr("stroke", "#000");
 }
 
-function drawScaler() {
-	var scaler = coverPaper.path("M 400 40 l 0 15 l 0 -5 l 50 0 l 0 5 l 0 -15 l 0 10 l 50 0 l 0 -10 l 0 10 l 50 0 l 0 -10 z");
-	var inScaler = coverPaper.path("M 450 40 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 ");
-	var text1 = coverPaper.text(425, 58, '1 cm').attr({"font-size": 11,"font-weight": "bold"});
-	var text2 = coverPaper.text(560, 45, 'µm').attr({"font-size": 11,"font-weight": "bold"});
-	var text3;
+function drawScaler(multiple) {
+	coverPaper.path("M 450 40 l 0 15 l 0 -5 l 32 0 l 0 5 l 0 -15 l 0 10 l 32 0 l 0 -10 l 0 10 l 32 0 l 0 -10 z");
+	coverPaper.path("M 482 40 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0");
+	coverPaper.text(466, 58, '1 cm').attr({"font-size": 11,"font-weight": "bold"});
+	coverPaper.text(560, 45, 'µm').attr({"font-size": 11,"font-weight": "bold"});
 	for (var i = 0; i<4; i+=1){
-		coverPaper.text(400+i*50, 30, i*100).attr({"font-size": 11,"font-weight": "bold"});
+		coverPaper.text(450+i*32, 30, Math.round(i*32/multiple*10)/10).attr({"font-size": 11,"font-weight": "bold"});
 	}
 }
 
