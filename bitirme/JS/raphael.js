@@ -68,6 +68,21 @@ function drawScaler(multiple) {
 		coverPaper.text(450+i*32, 30, Math.round(i*32/multiple*10)/10).attr({"font-size": 11,"font-weight": "bold"});
 	}
 }
+function drawClock(size, length) {
+	coverPaper.rect(40,45,100,10,2);
+	for(var i=0; i<length; i++){
+		coverPaper.rect(40,45,(100/length)*i,10,2);
+	}
+	coverPaper.rect(40,45,1*size,10,2).attr({"fill" : "#f00" ,"opacity" : 0.0005*size});
+	if(size == 99){
+		coverPaper.rect(40,45,100,10,2).attr({"fill" : "#f00"});
+	}
+}
+
+function drawEmptyClock(){
+	coverPaper.rect(40,45,100,10,2);
+	coverPaper.text(155, 50, 'sec').attr({"font-size": 11,"font-weight": "bold"});
+}
 
 function clearPaper() {
     paper.clear();

@@ -4,7 +4,7 @@
 function DiffusionController($scope) {
 
     var mean, stdDev, numberOfMolecules, initialX, initialY, distanceBetweenTwoCells, environmentMoleculeSize, boltzmanCoeff, 
-		temperature, viscosity, moleculeSize, cellRadius, inputStream, molecules, threshold, cellRadiusLocal, multiple;
+		temperature, viscosity, moleculeSize, cellRadius, inputStream, molecules, threshold, cellRadiusLocal, multiple, symbolDuration;
 	
 	var countMolecules = 0;
 	var localTime = 0;
@@ -23,10 +23,12 @@ function DiffusionController($scope) {
     viscosity = 0.001; // ( kg / (s * m) )
     moleculeSize = 1;   //nanometer
 	threshold = 30;
+	symbolDuration = 10; //sec
 	inputStream = "1";
 	outputStream = "";
 	
     $scope.view = {
+		symbolDuration: 10, //sec
         molecules: [],
         iterationTime: 0.05,   //sec
         numberOfMolecules: 100,
@@ -177,6 +179,7 @@ function DiffusionController($scope) {
 		radiusLocal = $scope.view.cellRadius;
 		temperature = $scope.view.temperature;
 		viscosity = $scope.view.viscosity;
+		symbolDuration = $scope.view.symbolDuration;
 		inputStream = $scope.view.inputStream;
 		inputStreamFirst = inputStream.split("",1);
 		
@@ -189,6 +192,7 @@ function DiffusionController($scope) {
 		cellRadiusLocal = Number(radiusLocal * locationOfCenter(radiusLocal,distanceBetweenTwoCellsLocal));
 		
 		drawScaler(multiple);
+		drawEmptyClock();
 		
 		initialX = 51 + 2*cellRadiusLocal;
 		
@@ -236,6 +240,7 @@ function DiffusionController($scope) {
 			viscosity: 0.001,
 			moleculeSize: 1,
 			threshold: 30,
+			symbolDuration: 10,
 			inputStream: "1",
 			outputStream: "",
 			show:true
@@ -245,6 +250,7 @@ function DiffusionController($scope) {
 	
     $scope.iterateSimulation = function () {
 		var inputStreamArr = [];
+		var clockSize = 0;
 		inputStreamArr = inputStream.split("");
         localTime = 0;
 		var distanceBetweenTwoCellsLocal, numberOfMoleculesLocal, index;
@@ -262,7 +268,7 @@ function DiffusionController($scope) {
                 $scope.$apply($scope.view.currentTime = localTime / 100);
 				$scope.$apply(threshold = $scope.view.threshold);
             }
-			if(localTime % 1000 == 0){
+			if(localTime % (100*symbolDuration) == 0){
 				alert(threshold+" - "+countMolecules);
 				if(Number(inputStreamArr[index])== 1){
 					for (var i = 0; i < numberOfMoleculesLocal; i++) {
@@ -296,7 +302,9 @@ function DiffusionController($scope) {
 				localTime = 0;
 				$scope.$apply($scope.view.currentTime = localTime / 100);
 			}
-            else if (!(localTime > 1000*inputStreamArr.length)) {
+            else if (!(localTime > 100*symbolDuration*inputStreamArr.length)) {
+				drawClock((clockSize*5)/(symbolDuration*inputStreamArr.length),inputStreamArr.length);
+				clockSize++;
                 setTimeout(function () { iterate(); }, 50);
             }
         }

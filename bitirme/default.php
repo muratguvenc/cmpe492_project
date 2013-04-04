@@ -11,39 +11,43 @@
 	<body>
 		<div ng-app="diffusion">
 			<div ng-controller="DiffusionController">
-				<span style="position:absolute; left:600px; top:90px">Number Of Molecules :</span>
-				<span style="position:absolute; left:755px; top:90px" >{{view.numberOfMolecules}}</span>
-				<input ng-show="view.show" style="position:absolute; left:750px; top:90px" ng-model="view.numberOfMolecules" />
+				<span style="position:absolute; left:600px; top:90px">Symbol Duration :</span>
+				<span style="position:absolute; left:755px; top:90px" >{{view.symbolDuration}}</span>
+				<input ng-show="view.show" style="position:absolute; left:750px; top:90px" ng-model="view.symbolDuration" />
+			
+				<span style="position:absolute; left:600px; top:120px">Number Of Molecules :</span>
+				<span style="position:absolute; left:755px; top:120px" >{{view.numberOfMolecules}}</span>
+				<input ng-show="view.show" style="position:absolute; left:750px; top:120px" ng-model="view.numberOfMolecules" />
 				
-				<span style="position:absolute; left:600px; top:130px">Dist. Betw. Two Cells :</span>
-				<span style="position:absolute; left:755px; top:130px" >{{view.distanceBetweenTwoCells}} µm</span>
-				<input ng-show="view.show" style="position:absolute; left:750px; top:130px" ng-model="view.distanceBetweenTwoCells" />
+				<span style="position:absolute; left:600px; top:150px">Dist. Betw. Two Cells :</span>
+				<span style="position:absolute; left:755px; top:150px" >{{view.distanceBetweenTwoCells}} µm</span>
+				<input ng-show="view.show" style="position:absolute; left:750px; top:150px" ng-model="view.distanceBetweenTwoCells" />
 				
-				<span style="position:absolute; left:600px; top:170px">Radius of a Cell :</span>
-				<span style="position:absolute; left:755px; top:170px" >{{view.cellRadius}} µm</span>
-				<input ng-show="view.show" style="position:absolute; left:750px; top:170px" ng-model="view.cellRadius" />
+				<span style="position:absolute; left:600px; top:180px">Radius of a Cell :</span>
+				<span style="position:absolute; left:755px; top:180px" >{{view.cellRadius}} µm</span>
+				<input ng-show="view.show" style="position:absolute; left:750px; top:180px" ng-model="view.cellRadius" />
 				
 				<span style="position:absolute; left:600px; top:210px">Temperature :</span>
 				<span style="position:absolute; left:755px; top:210px" >{{view.temperature}} K</span>
 				<input ng-show="view.show" style="position:absolute; left:750px; top:210px" ng-model="view.temperature" />
 				
-				<span style="position:absolute; left:600px; top:250px">Viscosity :</span>
-				<span style="position:absolute; left:755px; top:250px" >{{view.viscosity}}</span>
-				<input ng-show="view.show" style="position:absolute; left:750px; top:250px" ng-model="view.viscosity" />
+				<span style="position:absolute; left:600px; top:240px">Viscosity :</span>
+				<span style="position:absolute; left:755px; top:240px" >{{view.viscosity}}</span>
+				<input ng-show="view.show" style="position:absolute; left:750px; top:240px" ng-model="view.viscosity" />
 				
-				<span style="position:absolute; left:600px; top:290px">Molecule Size :</span>
-				<span style="position:absolute; left:755px; top:290px" >{{view.moleculeSize}} nm</span>
-				<input ng-show="view.show" style="position:absolute; left:750px; top:290px" ng-model="view.moleculeSize" />
+				<span style="position:absolute; left:600px; top:270px">Molecule Size :</span>
+				<span style="position:absolute; left:755px; top:270px" >{{view.moleculeSize}} nm</span>
+				<input ng-show="view.show" style="position:absolute; left:750px; top:270px" ng-model="view.moleculeSize" />
 				
-				<span style="position:absolute; left:600px; top:330px">Input Stream :</span>
-				<span style="position:absolute; left:755px; top:330px" >{{view.inputStream}}</span>
-				<input ng-show="view.show" style="position:absolute; left:750px; top:330px" ng-model="view.inputStream"/>
+				<span style="position:absolute; left:600px; top:300px">Input Stream :</span>
+				<span style="position:absolute; left:755px; top:300px" >{{view.inputStream}}</span>
+				<input ng-show="view.show" style="position:absolute; left:750px; top:300px" ng-model="view.inputStream"/>
 				
-				<span style="position:absolute; left:600px; top:370px">Output Stream :</span>
-				<span style="position:absolute; left:755px; top:370px" >{{view.outputStream}}</span>
+				<span style="position:absolute; left:600px; top:330px">Output Stream :</span>
+				<span style="position:absolute; left:755px; top:330px" >{{view.outputStream}}</span>
 				
-				<span style="position:absolute; left:600px; top:410px">Threshold Percentage :</span>
-				<input style="position:absolute; left:750px; top:410px" ng-model="view.threshold"/>
+				<span style="position:absolute; left:600px; top:360px">Threshold Percentage :</span>
+				<input style="position:absolute; left:750px; top:360px" ng-model="view.threshold"/>
 				
 				<span style="position:absolute; left:600px; top:50px" ng-model="view.currentTime">{{view.currentTime}}</span>
 				
