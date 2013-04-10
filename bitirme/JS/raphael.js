@@ -29,22 +29,23 @@
 }*/
 
 
-var paper,coverPaper ,drawings;
+var paper,coverPaper,recPaper,drawings;
 
 
 function initRaphael () {
-    //paper = Raphael($(".raphael")[0], 406, 664);
-    paper = Raphael(0, 0, 600, 400);    
+    paper = Raphael(0, 0, 600, 400);  
 }
 
 function initCover (){
-	coverPaper = Raphael(0, 0, 600, 400); 
+	coverPaper = Raphael(0, 0, 600, 400);
+	recPaper = Raphael(0, 0, 600, 400);
+	coverPaper.path("M 0 0 l 600 0 l 0 400 l -600 0 z").attr({"stroke-width" : "10"});
 }
 
 function drawCircle(x,y,r) {
     var circle = paper.circle(x, y, r);
     // Sets the fill attribute of the circle to red (#f00)
-    circle.attr("fill", "#f00");
+    circle.attr("fill", "#291761");
 
     // Sets the stroke attribute of the circle to white
     circle.attr("stroke", "#000");
@@ -53,7 +54,7 @@ function drawCircle(x,y,r) {
 function drawCellCircle(x,y,r) {
 	var circle = coverPaper.circle(x, y, r);
     // Sets the fill attribute of the circle to red (#f00)
-    circle.attr("fill", "#f00");
+    circle.attr("fill", "#6086C4");
 
     // Sets the stroke attribute of the circle to white
     circle.attr("stroke", "#000");
@@ -64,28 +65,70 @@ function drawScaler(multiple) {
 	coverPaper.path("M 482 40 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0");
 	coverPaper.text(466, 58, '1 cm').attr({"font-size": 11,"font-weight": "bold"});
 	coverPaper.text(560, 45, 'µm').attr({"font-size": 11,"font-weight": "bold"});
+	coverPaper.text(480, 365, '# Molecules Received : ').attr({"font-size": 12,"font-weight": "bold"});
 	for (var i = 0; i<4; i+=1){
 		coverPaper.text(450+i*32, 30, Math.round(i*32/multiple*10)/10).attr({"font-size": 11,"font-weight": "bold"});
 	}
 }
 function drawClock(size, length) {
-	coverPaper.rect(40,45,100,10,2);
-	for(var i=0; i<length; i++){
-		coverPaper.rect(40,45,(100/length)*i,10,2);
-	}
-	coverPaper.rect(40,45,1*size,10,2).attr({"fill" : "#f00" ,"opacity" : 0.0005*size});
-	if(size == 99){
-		coverPaper.rect(40,45,100,10,2).attr({"fill" : "#f00"});
+	coverPaper.rect(40,25,150,20,2);
+	coverPaper.path("M 40 35 l "+size+" 0").attr({"stroke" : "#6086C4","stroke-width" : "20" ,"opacity" : 0.005*size});
+}
+
+function drawOutput(size, length, place) {
+	coverPaper.rect(40,55,150,20,2);
+	var temp = 40+(place*(150/length));
+	coverPaper.path("M "+temp+" 65 l "+size+" 0").attr({"stroke" : "#6086C4","stroke-width" : "20" ,"opacity" : 0.005*size});
+}
+
+function drawInputStream(stream){
+	var streamArr = stream.split("");
+	for(var i = 0 ; i<stream.length ; i++){
+		coverPaper.text(40+(150/stream.length)*(i+(1/2)), 35, streamArr[i]).attr({"font-size": 12,"font-weight": "bold"});
+		coverPaper.path("M 40 55 l "+((150/stream.length)*i)+" 0 l 0 20");
+		coverPaper.path("M 40 25 l "+((150/stream.length)*i)+" 0 l 0 20");
 	}
 }
 
-function drawEmptyClock(){
-	coverPaper.rect(40,45,100,10,2);
-	coverPaper.text(155, 50, 'sec').attr({"font-size": 11,"font-weight": "bold"});
+function drawFalse(place,streamLength, bit){
+	coverPaper.rect(40+place*(150/streamLength), 55, (150/streamLength), 20, 2).attr({"fill" : "f00"});
+	coverPaper.text(40+(150/streamLength)*(place+(1/2)), 65, bit).attr({"font-size": 12,"font-weight": "bold"});
+}
+
+function drawTrue(place,streamLength, bit){
+	coverPaper.rect(40+place*(150/streamLength), 55, (150/streamLength), 20, 2).attr({"fill" : "0f0"});
+	coverPaper.text(40+(150/streamLength)*(place+(1/2)), 65, bit).attr({"font-size": 12,"font-weight": "bold"});
+}
+
+function receiveCount(color){
+	if(color == 1){
+		coverPaper.path("M 550 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#00FF00"});
+	}
+	else if(color == 0){
+		coverPaper.path("M 550 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#f00"});
+	}
+	else{
+		coverPaper.path("M 550 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#6086C4"});
+	}
+}
+
+function receiveMoleculeNumber(countMolecules){
+	recPaper.text(565, 365, countMolecules).attr({"font-size": 12,"font-weight": "bold"})
+}
+
+function drawEmptyClock(output){
+	coverPaper.path("M 40 "+(25+(30*output))+" l 150 0 l 0 20 l -150 0 z");
+	if(output == 0){
+		coverPaper.text(205, 35, 'sec').attr({"font-size": 12,"font-weight": "bold"});
+	}
 }
 
 function clearPaper() {
     paper.clear();
+}
+
+function clearRecPaper() {
+    recPaper.clear();
 }
 
 function clearCover() {
