@@ -28,15 +28,19 @@
     }
 }*/
 
+var paper,coverPaper, clockPaper,recPaper,drawings;
 
-var paper,coverPaper,recPaper,drawings;
 
+$(document).ready(function(){
+	initCover();
+});
 
 function initRaphael () {
     paper = Raphael(0, 0, 600, 400);  
 }
 
 function initCover (){
+	clockPaper = Raphael(0, 0, 300, 300);
 	coverPaper = Raphael(0, 0, 600, 400);
 	recPaper = Raphael(0, 0, 600, 400);
 	coverPaper.path("M 0 0 l 600 0 l 0 400 l -600 0 z").attr({"stroke-width" : "10"});
@@ -71,14 +75,15 @@ function drawScaler(multiple) {
 	}
 }
 function drawClock(size, length) {
-	coverPaper.rect(40,25,150,20,2);
-	coverPaper.path("M 40 35 l "+size+" 0").attr({"stroke" : "#6086C4","stroke-width" : "20" ,"opacity" : 0.005*size});
+	clockPaper.clear();
+	clockPaper.rect(40,25,150,20,2);
+	clockPaper.path("M 40 35 l "+size+" 0").attr({"stroke" : "#6086C4","stroke-width" : "20" ,"opacity" : 0.01*size});
 }
 
 function drawOutput(size, length, place) {
-	coverPaper.rect(40,55,150,20,2);
+	clockPaper.rect(40,55,150,20,2);
 	var temp = 40+(place*(150/length));
-	coverPaper.path("M "+temp+" 65 l "+size+" 0").attr({"stroke" : "#6086C4","stroke-width" : "20" ,"opacity" : 0.005*size});
+	clockPaper.path("M "+temp+" 65 l "+size+" 0").attr({"stroke" : "#6086C4","stroke-width" : "20" ,"opacity" : 0.05*size});
 }
 
 function drawInputStream(stream){
@@ -113,7 +118,7 @@ function receiveCount(color){
 }
 
 function receiveMoleculeNumber(countMolecules){
-	recPaper.text(565, 365, countMolecules).attr({"font-size": 12,"font-weight": "bold"})
+	recPaper.text(565, 365, countMolecules).attr({"font-size": 12,"font-weight": "bold"});
 }
 
 function drawEmptyClock(output){
@@ -121,6 +126,27 @@ function drawEmptyClock(output){
 	if(output == 0){
 		coverPaper.text(205, 35, 'sec').attr({"font-size": 12,"font-weight": "bold"});
 	}
+}
+
+function showStatistics(totalTime, totalArrive, correctData, length){
+	var a = new Array();
+	a[0] = paper.path("M 240 -200 l 340 0 l 0 200 l -340 0 z").attr({"stroke" : "#563D0B", "fill" : "#FFF798","stroke-width" : "5"});
+	a[1] = paper.text(260, -210, '\u2022 Total time in simulation :'+totalTime+' sec ').attr({"font-size": 14,"font-weight": "bold", "text-anchor":"start"});
+	a[2] = paper.text(260, -210, '\u2022 Total # molecules arrived to receiver : '+totalArrive).attr({"font-size": 14,"font-weight": "bold", "text-anchor":"start"});
+	a[3] = paper.text(260, -210, '\u2022 Avg. # molecules arrived to receiver in').attr({"font-size": 14,"font-weight": "bold", "text-anchor":"start"});
+	a[4] = paper.text(360, -210, 'a symbol time: '+(Math.round(totalArrive/length*100))/100).attr({"font-size": 14,"font-weight": "bold", "text-anchor":"start"});
+	a[5] = paper.text(260, -210, '\u2022 Success percentage of data ').attr({"font-size": 14,"font-weight": "bold", "text-anchor":"start"});
+	a[6] = paper.text(360, -210, 'transmission : '+(Math.round(correctData/length*100))/100).attr({"font-size": 14,"font-weight": "bold", "text-anchor":"start"});
+	a[0].animate({path : "M 240 20 l 340 0 l 0 200 l -340 0 z"}, 800);
+	for(var i=0;i<6;i++){
+		if(i==3 || i==5){
+			a[i+1].animate({x : 360 , y : 20+20*(i+1)}, 800);
+		}
+		else{
+			a[i+1].animate({x : 260 , y : 20+20*(i+1)}, 800);
+		}
+	}
+
 }
 
 function clearPaper() {
@@ -133,6 +159,10 @@ function clearRecPaper() {
 
 function clearCover() {
 	coverPaper.clear();
+}
+
+function clearClockPaper() {
+	clockPaper.clear();
 }
 
 window.onload = function () {

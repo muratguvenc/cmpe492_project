@@ -33,7 +33,7 @@
 				
 				<span style="position:absolute; left:610px; top:180px">Radius of a Cell :</span>
 				<span ng-show="view.notShow" style="position:absolute; left:765px; top:180px" >{{view.cellRadius}}</span>
-				<input ng-show="view.show" type="number" min="1" max="15" step="1" style="position:absolute; left:760px; top:180px; width:80px" ng-model="view.cellRadius" />
+				<input ng-show="view.show" type="number" min="1" max="20" step="1" style="position:absolute; left:760px; top:180px; width:80px" ng-model="view.cellRadius" />
 				<span style="position:absolute; left:850px; top:180px">µm</span>
 				
 				<span style="position:absolute; left:610px; top:210px">Temperature :</span>
@@ -44,7 +44,7 @@
 				<span style="position:absolute; left:610px; top:240px">Viscosity :</span>
 				<span ng-show="view.notShow" style="position:absolute; left:765px; top:240px" >{{view.viscosity}}</span>
 				<input ng-show="view.show" type="number" min="0" max="0.01" step="0.0005" style="position:absolute; left:760px; top:240px; width:80px" ng-model="view.viscosity" />
-				<span style="position:absolute; left:850px; top:240px">viscosity</span>
+				<span style="position:absolute; left:850px; top:240px">kg/(s·m)</span>
 				
 				<span style="position:absolute; left:610px; top:270px">Molecule Size :</span>
 				<span ng-show="view.notShow" style="position:absolute; left:765px; top:270px" >{{view.moleculeSize}}</span>
@@ -66,9 +66,9 @@
 				
 				<span style="position:absolute; left:610px; top:50px" ng-model="view.currentTime">{{view.currentTime}}</span>
 				
-				<button style="position:absolute; left:610px;" ng-click="iterateSimulation()">ilerle</button>
-				<button style="position:absolute; left:650px;" onClick="validate()" ng-click="init()">init</button>
-				<button style="position:absolute; left:700px;" ng-click="refresh()">yenile</button>
+				<button ng-show="view.showIterate" style="position:absolute; left:610px; width: 80px;" ng-click="iterateSimulation()">ilerle</button>
+				<button ng-show="view.show"style="position:absolute; left:610px; width: 80px;" onClick="validate()" ng-click="init()">init</button>
+				<button ng-show="view.notShow" style="position:absolute; left:700px; width: 80px;" ng-click="refresh()">yenile</button>
 			</div>
 		</div>
 	</body>
