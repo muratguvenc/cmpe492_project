@@ -2,4 +2,5 @@
 
 /* App Module */
 
-angular.module('diffusion', ['moledulesDisplayDirective']);
+angular.module('diffusion', []);
+angular.module('calciumSignaling', []);

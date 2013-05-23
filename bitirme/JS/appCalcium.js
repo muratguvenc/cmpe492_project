@@ -1,9 +1,11 @@
-﻿/// <reference path="../../../Scripts/angular.1.09.js" />
+/// <reference path="../../../Scripts/angular.1.09.js" />
 
 
-function DiffusionController($scope) {
+function CalciumSignalingController($scope) {
 	var SIZE_X = 600 , SIZE_Y = 400;
-	
+	var cellLength=250,cellWidth=200,X=50,Y=100;
+	var	centerERX=175, centerERY=250, ER_rHor=110, ER_rVer=30;
+	var nucX = 120, nucY = 110, nucWidth = 80, nucLength=150;
     var mean, stdDev, numberOfMolecules, initialX, initialY, distanceBetweenTwoCells, environmentMoleculeSize, boltzmanCoeff, 
 		temperature, viscosity, moleculeSize, cellRadius, inputStream, molecules, threshold, cellRadiusLocal, multiple, symbolDuration,
 		lastValues = new Array(), statistics = new Array() ,color, totalArrive = 0, correctData = 0;
@@ -16,8 +18,8 @@ function DiffusionController($scope) {
 	mean = 0;
 	color = 2;
     numberOfMolecules = 100;
-    initialX = 176;
-    initialY = SIZE_Y/2;
+    initialX = X+1;
+    initialY = Y+1;
 	distanceBetweenTwoCells = 7;	//mikrometre
 	cellRadius = 15;
     environmentMoleculeSize = 1.32; //nanometer
@@ -81,46 +83,36 @@ function DiffusionController($scope) {
         moleculesLocal = $scope.view.molecules;     //for performance increase
 
         for (var i = 0; i < moleculesLocal.length; i++) {
-            drawCircleDiffusion(moleculesLocal[i].x, moleculesLocal[i].y, 1);
+            drawCircle(moleculesLocal[i].x, moleculesLocal[i].y, 1);
         }
     };
 	
-	function lineInCircle(ax, ay, bx, by, cell, cellRadius){
-		
-		if(cell==0){
-			var cx = 50 + cellRadius;
-			var cy = SIZE_Y/2;
-		}else{
-			var cx = SIZE_X - 50 - cellRadius;
-			var cy = SIZE_Y/2;
+	function inCellCheck(dX,dY, sX, sY, sL, sW){
+		if((dY<=sY) || (dX<=sX)){
+			return false;
 		}
-		//var cr =  calculateRadius($scope.view.distanceBetweenTwoCells);
-		var cr = cellRadius;
-		var vx = bx - ax;
-		var vy = by - ay;
-		var xdiff = ax - cx;
-		var ydiff = ay - cy;
-		var a = vx*vx + vy*vy;
-		var b = 2 * ((vx * xdiff) + (vy * ydiff));
-		var c = xdiff * xdiff + ydiff * ydiff - cr * cr;
-		var quad = b*b - (4 * a * c);
-		if (quad >= 0)
-		{
-			// An infinite collision is happening, but let's not stop here
-			var quadsqrt=Math.sqrt(quad);
-			
-			root1 = (-b - quadsqrt)/(2*a);
-			root2 = (-b + quadsqrt)/(2*a);
-			if(root1 > 1)
-				return false;	//No collision
-			if(root2 < 0)
+		else{
+			if((dY>=sY+sW) || (dX>=sX+sL)){
 				return false;
-			return true;
-			
+			}
+			else{
+				return true;
+			}
+			return false;
 		}
 		return false;
-}
 	
+	}
+	
+	
+	function inERCheck(dX,dY){
+		var inER=((dX-centerERX)*(dX-centerERX))/((ER_rHor)*(ER_rHor))+((dY-centerERY)*(dY-centerERY))/((ER_rVer)*(ER_rVer));
+		if(inER<=1){
+			return true;
+		}
+		return false;
+	}
+
     function iterateMolecules() {
         var stdDev, tempGaussX, tempGaussY;
 
@@ -133,25 +125,13 @@ function DiffusionController($scope) {
 			tempGaussX = generateGaussianRandom(stdDev)*multiple;
 			tempGaussY = generateGaussianRandom(stdDev)*multiple;
 			
-			if(lineInCircle(molecules[i].x, molecules[i].y, molecules[i].x+Number(tempGaussX), molecules[i].y+Number(tempGaussY),1,cellRadiusLocal)){
-		    		molecules.splice(i,1);
-					countMolecules++;
-					totalArrive++;
-					clearRecPaperDiffusion();
-					receiveMoleculeNumberDiffusion(countMolecules);
-					if(countMolecules >= numberOfMolecules*threshold/100){
-						receiveCountDiffusion(color);
-					}
-					else{
-						receiveCountDiffusion(2);
-					}
-			}
-			else if(!lineInCircle(molecules[i].x, molecules[i].y, molecules[i].x+Number(tempGaussX), molecules[i].y+Number(tempGaussY),0, cellRadiusLocal)){//inCellvTwo(moleculesLocal[i].x+Number(tempGaussX), moleculesLocal[i].y+Number(tempGaussY),0)){
+			if(inCellCheck(molecules[i].x+tempGaussX, molecules[i].y + tempGaussY,X,Y,cellLength, cellWidth) && !inERCheck(molecules[i].x+tempGaussX, molecules[i].y + tempGaussY) && 
+						!inCellCheck(molecules[i].x+tempGaussX, molecules[i].y + tempGaussY, nucX, nucY, nucLength, nucWidth)){
 				molecules[i].x += tempGaussX;
 				molecules[i].y += tempGaussY;
-			}else{
-			    //moleculesLocal[i].x -= tempGaussX;
-				//moleculesLocal[i].y -= tempGaussY;
+			}
+			else{
+				
 			}
             
         }
@@ -169,9 +149,9 @@ function DiffusionController($scope) {
 		totalArrive = 0;
 		correctData = 0
 		molecules = [];
-		clearPaperDiffusion();
+		clearPaper();
 		localTime = 0;
-		initCoverDiffusion();
+		initCover();
 		
 		distanceBetweenTwoCellsLocal = $scope.view.distanceBetweenTwoCells;
 		radiusLocal = $scope.view.cellRadius;
@@ -244,17 +224,19 @@ function DiffusionController($scope) {
 		radiusR = Number(SIZE_X - 50 - radiusLocal*locationOfCenter(radiusLocal,distanceBetweenTwoCellsLocal));
 		cellRadiusLocal = Number(radiusLocal * locationOfCenter(radiusLocal,distanceBetweenTwoCellsLocal));
 		
-		drawScalerDiffusion(multiple);
-		drawEmptyClockDiffusion(0);
-		drawEmptyClockDiffusion(1);
-		receiveCountDiffusion(2);
-		drawInputStreamDiffusion(inputStream);
+		drawScaler(multiple);
+		drawEmptyClock(0);
+		drawEmptyClock(1);
+		receiveCount(2);
+		drawInputStream(inputStream);
 		
-		initialX = 51 + 2*cellRadiusLocal;
 		
-		//temp = 300 - Number(distanceBetweenTwoCellsLocal)/2;
-		drawCellCircleDiffusion(radiusT,SIZE_Y/2,cellRadiusLocal);		//Draw receiver cell
-		drawCellCircleDiffusion(radiusR,SIZE_Y/2,cellRadiusLocal);		//Draw transmitter cell
+		
+		drawCellRect(X,Y,cellLength,cellWidth);		//Draw receiver cell
+		drawCellRect(X+Number(cellLength),Y,cellLength,cellWidth);		//Draw transmitter cell
+		
+		drawER(centerERX, centerERY, ER_rHor, ER_rVer);
+		drawNucleus(nucX, nucY, nucLength, nucWidth);
         //create molecules
 		if(inputStreamFirst[0]==1){
 			color = 1;
@@ -271,7 +253,7 @@ function DiffusionController($scope) {
 		$scope.view.notShow = true;
 		$scope.view.showIterate = true;
 		
-        initRaphaelDiffusion();
+        initRaphael();
 
         drawAllMolecules();
     };
@@ -280,7 +262,7 @@ function DiffusionController($scope) {
 
         var x = Math.floor(Math.random() * SIZE_X);    // max 600 because of canvas size, see raphael.js under Js folder
         var y = Math.floor(Math.random() * SIZE_Y);
-        drawCircleDiffusion(x, y, 1);
+        drawCircle(x, y, 1);
     };
 	
 	$scope.refresh = function(){
@@ -289,10 +271,10 @@ function DiffusionController($scope) {
 		totalArrive = 0;
 		correctData = 0;
 		outputStream = "";
-		clearPaperDiffusion();
-		clearCoverDiffusion();
-		clearRecPaperDiffusion();
-		clearClockPaperDiffusion();
+		clearPaper();
+		clearCover();
+		clearRecPaper();
+		clearClockPaper();
 		molecules = [];
 		$scope.view = {
 			molecules: [],
@@ -332,7 +314,7 @@ function DiffusionController($scope) {
 		
         var iterate = function () {
 			$scope.view.showIterate = false;
-            clearPaperDiffusion();
+            clearPaper();
             iterateMolecules();
             drawAllMolecules();
             localTime += 5;	
@@ -341,7 +323,7 @@ function DiffusionController($scope) {
 				$scope.$apply(threshold = $scope.view.threshold);
             }
 			if(localTime % (100*symbolDuration) == 0){
-				receiveCountDiffusion(2);
+				receiveCount(2);
 				if(Number(inputStreamArr[index])== 1){
 					color = 1;
 					for (var i = 0; i < numberOfMoleculesLocal; i++) {
@@ -351,19 +333,19 @@ function DiffusionController($scope) {
 						outputStream += 1;
 						countMolecules = 0;
 						if(Number(inputStreamArr[index-1])== 1){
-							drawTrueDiffusion(index-1, inputStreamArr.length, 1);
+							drawTrue(index-1, inputStreamArr.length, 1);
 							correctData++;
 						}
 						else
-							drawFalseDiffusion(index-1, inputStreamArr.length, 1);
+							drawFalse(index-1, inputStreamArr.length, 1);
 					}
 					else{
 						outputStream += 0;
 						countMolecules = 0;
 						if(Number(inputStreamArr[index-1])== 1)
-							drawFalseDiffusion(index-1, inputStreamArr.length, 0);
+							drawFalse(index-1, inputStreamArr.length, 0);
 						else{
-							drawTrueDiffusion(index-1, inputStreamArr.length, 0);
+							drawTrue(index-1, inputStreamArr.length, 0);
 							correctData++;
 						}
 					}
@@ -376,19 +358,19 @@ function DiffusionController($scope) {
 						outputStream += 1;
 						countMolecules = 0;
 						if(Number(inputStreamArr[index-1])== 1){
-							drawTrueDiffusion(index-1, inputStreamArr.length, 1);
+							drawTrue(index-1, inputStreamArr.length, 1);
 							correctData++;
 						}
 						else
-							drawFalseDiffusion(index-1, inputStreamArr.length, 1);
+							drawFalse(index-1, inputStreamArr.length, 1);
 					}
 					else{
 						outputStream += 0;
 						countMolecules = 0;
 						if(Number(inputStreamArr[index-1])== 1)
-							drawFalseDiffusion(index-1, inputStreamArr.length, 0);
+							drawFalse(index-1, inputStreamArr.length, 0);
 						else{
-							drawTrueDiffusion(index-1, inputStreamArr.length, 0);
+							drawTrue(index-1, inputStreamArr.length, 0);
 							correctData++;
 						}
 					}
@@ -402,14 +384,14 @@ function DiffusionController($scope) {
 				$scope.$apply($scope.view.currentTime = localTime / 100);
 			}
             else if (!(localTime > 100*symbolInputLength)) {
-				drawClockDiffusion(((clockSize)/symbolInputLength)*3/2,inputStreamArr.length);
-				drawOutputDiffusion(((clockSizeOut)/symbolInputLength)*3/2,inputStreamArr.length, index-1);
+				drawClock(((clockSize)/symbolInputLength)*3/2,inputStreamArr.length);
+				drawOutput(((clockSizeOut)/symbolInputLength)*3/2,inputStreamArr.length, index-1);
 				clockSize+=5;
 				clockSizeOut+=5;
                 setTimeout(function () { iterate(); }, 50);
             }
 			else{
-				showStatisticsDiffusion(symbolInputLength,totalArrive,correctData,inputStreamArr.length);
+				showStatistics(symbolInputLength,totalArrive,correctData,inputStreamArr.length);
 			}
         }
         iterate();

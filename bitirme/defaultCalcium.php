@@ -6,12 +6,12 @@
 	<script src="Scripts/jquery-1.6.2.min.js" type="text/javascript"></script>
 	<script src="Scripts/jquery-ui-1.8.11.min.js" type="text/javascript"></script>
 	<script src="JS/appModule.js" type="text/javascript"></script>
-	<script src="JS/raphael.js" type="text/javascript"></script>
-	<script src="JS/app.js" type="text/javascript"></script>
+	<script src="JS/raphaelCalcium.js" type="text/javascript"></script>
+	<script src="JS/appCalcium.js" type="text/javascript"></script>
 	</head>
 	<body>
-		<div ng-app="diffusion">
-			<div ng-controller="DiffusionController">
+		<div ng-app="calciumSignaling">
+			<div ng-controller="CalciumSignalingController">
 				<span style="position:absolute; left:610px; top:90px">Symbol Duration :</span>
 				<span ng-show="view.notShow" style="position:absolute; left:765px; top:90px" >{{view.symbolDuration}}</span>
 				<input ng-show="view.show" type="number" min="0.5" max="10" step="0.5" maxlength="2" style="position:absolute; left:760px; top:90px; width:80px" ng-model="view.symbolDuration" />
@@ -62,9 +62,9 @@
 				
 				<span style="position:absolute; left:610px; top:50px" ng-model="view.currentTime">{{view.currentTime}}</span>
 				
-				<button ng-show="view.showIterate" style="position:absolute; left:610px; width: 80px;" ng-click="iterateSimulation()">Run</button>
-				<button ng-show="view.show"style="position:absolute; left:610px; width: 80px;" onClick="validate()" ng-click="init()">Initialize</button>
-				<button ng-show="view.notShow" style="position:absolute; left:700px; width: 80px;" ng-click="refresh()">Refresh</button>
+				<button ng-show="view.showIterate" style="position:absolute; left:610px; width: 80px;" ng-click="iterateSimulation()">ilerle</button>
+				<button ng-show="view.show"style="position:absolute; left:610px; width: 80px;" onClick="validate()" ng-click="init()">init</button>
+				<button ng-show="view.notShow" style="position:absolute; left:700px; width: 80px;" ng-click="refresh()">yenile</button>
 			</div>
 		</div>
 	</body>
