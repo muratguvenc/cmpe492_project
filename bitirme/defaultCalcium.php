@@ -14,14 +14,14 @@
 			<div ng-controller="CalciumSignalingController">
 				<span style="position:absolute; left:610px; top:90px">Symbol Duration :</span>
 				<span ng-show="view.notShow" style="position:absolute; left:765px; top:90px" >{{view.symbolDuration}}</span>
-				<input ng-show="view.show" type="number" min="0.5" max="10" step="0.5" maxlength="2" style="position:absolute; left:760px; top:90px; width:80px" ng-model="view.symbolDuration" />
+				<input ng-show="view.show" type="number" min="0.5" max="60" step="0.5" maxlength="2" style="position:absolute; left:760px; top:90px; width:80px" ng-model="view.symbolDuration" />
 				<span style="position:absolute; left:850px; top:90px">sec</span>
 
 				<span id="numberOfMolecules" style="position:absolute; left:610px; top:120px">Number Of Molecules :</span>
 				<span ng-show="view.notShow" style="position:absolute; left:765px; top:120px" >{{view.numberOfMolecules}}</span>
 				<input ng-show="view.show" type="number" min="1" max="100" step="1" style="position:absolute; left:760px; top:120px; width:80px" ng-model="view.numberOfMolecules" />
 				<span style="position:absolute; left:850px; top:120px">#</span>
-				
+				<!--
 				<span style="position:absolute; left:610px; top:150px">Dist. Betw. Two Cells :</span>
 				<span ng-show="view.notShow" style="position:absolute; left:765px; top:150px" >{{view.distanceBetweenTwoCells}}</span>
 				<input ng-show="view.show" type="number" min="1" max="50" step="1" style="position:absolute; left:760px; top:150px; width:80px" ng-model="view.distanceBetweenTwoCells" />
@@ -44,13 +44,13 @@
 				
 				<span style="position:absolute; left:610px; top:270px">Molecule Size :</span>
 				<span ng-show="view.notShow" style="position:absolute; left:765px; top:270px" >{{view.moleculeSize}}</span>
-				<input ng-show="view.show" type="number" min="0.5" max="10" step="0.01" style="position:absolute; left:760px; top:270px; width:80px" ng-model="view.moleculeSize" />
+				<input ng-show="view.show" type="number" min="0.01" max="10" step="0.01" style="position:absolute; left:760px; top:270px; width:80px" ng-model="view.moleculeSize" />
 				<span style="position:absolute; left:850px; top:270px">nm</span>
 				
 				<span style="position:absolute; left:610px; top:300px">Env. Molecule Size :</span>
 				<span ng-show="view.notShow" style="position:absolute; left:765px; top:300px" >{{view.environmentMoleculeSize}}</span>
 				<input ng-show="view.show" type="number" min="0.5" max="10" step="0.01" style="position:absolute; left:760px; top:300px; width:80px" ng-model="view.environmentMoleculeSize" />
-				<span style="position:absolute; left:850px; top:300px">nm</span>
+				<span style="position:absolute; left:850px; top:300px">nm</span>-->
 				
 				<span style="position:absolute; left:610px; top:330px">Input Stream :</span>
 				<span ng-show="view.notShow" style="position:absolute; left:765px; top:330px" >{{view.inputStream}}</span>

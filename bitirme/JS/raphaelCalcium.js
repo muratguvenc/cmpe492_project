@@ -33,16 +33,22 @@ function initCover (){
 	clockPaper = Raphael(0, 0, 300, 300);
 	coverPaper = Raphael(0, 0, 600, 400);
 	recPaper = Raphael(0, 0, 600, 400);
+	calPaper = Raphael(0, 0, 600, 400);
 	coverPaper.path("M 0 0 l 600 0 l 0 400 l -600 0 z").attr({"stroke-width" : "10"});
 }
 
 function drawCircle(x,y,r) {
     var circle = paper.circle(x, y, r);
-    // Sets the fill attribute of the circle to red (#f00)
-    circle.attr("fill", "#291761");
-
-    // Sets the stroke attribute of the circle to white
-    circle.attr("stroke", "#000");
+	if(r==1){
+		circle.attr("fill", "#291761");
+		// Sets the stroke attribute of the circle to white
+		circle.attr("stroke", "#000");
+	}
+	else{
+		circle.attr("fill", "#D04C4C");
+		// Sets the stroke attribute of the circle to white
+		circle.attr("stroke", "#D04C4C");
+	}
 }
 
 function drawCellRect(x,y,l,w) {
@@ -50,10 +56,15 @@ function drawCellRect(x,y,l,w) {
     cellRect.attr("stroke", "#000");
 }
 
+function drawPassage(x,y,l){
+	var passage = coverPaper.path("M "+x+" "+y+" l 0 "+l+" ");
+	passage.attr({"stroke" : "#B6FCB3", "stroke-width" : "5" });
+}
+
 function drawNucleus(x,y,l,w){
 	var cellRect = coverPaper.rect(x,y,l,w,5);
     cellRect.attr("stroke", "#000");
-	cellRect.attr("fill", "#ECBD59")
+	cellRect.attr("fill", "#ECBD59");
 }
 
 function drawER(x,y,h,v) {
@@ -66,7 +77,7 @@ function drawScaler(multiple) {
 	coverPaper.path("M 482 40 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0");
 	coverPaper.text(466, 58, '1 cm').attr({"font-size": 11,"font-weight": "bold"});
 	coverPaper.text(560, 45, 'µm').attr({"font-size": 11,"font-weight": "bold"});
-	coverPaper.text(480, 365, '# Molecules Received : ').attr({"font-size": 12,"font-weight": "bold"});
+	coverPaper.text(480, 365, '# IP3 Received by ER1 : ').attr({"font-size": 12,"font-weight": "bold"});
 	for (var i = 0; i<4; i+=1){
 		coverPaper.text(450+i*32, 30, Math.round(i*32/multiple*10)/10).attr({"font-size": 11,"font-weight": "bold"});
 	}
@@ -114,8 +125,18 @@ function receiveCount(color){
 	}
 }
 
-function receiveMoleculeNumber(countMolecules){
-	recPaper.text(565, 365, countMolecules).attr({"font-size": 12,"font-weight": "bold"});
+function drawCountCal(number){
+	calPaper.text(200, 365, number).attr({"font-size": 12,"font-weight": "bold"});
+}
+
+function receiveMoleculeNumber(countMolecules, X){
+	recPaper.text(X, 365, countMolecules).attr({"font-size": 12,"font-weight": "bold"});
+}
+
+function drawCalciumReceptor(X, Y, r){
+	var receptor = coverPaper.circle(X,Y,r);
+	receptor.attr("fill", "#C7DADF");
+	receptor.attr("stroke", "#C7DADF");
 }
 
 function drawEmptyClock(output){
@@ -160,6 +181,10 @@ function clearCover() {
 
 function clearClockPaper() {
 	clockPaper.clear();
+}
+
+function clearCalPaper(){
+	calPaper.clear();
 }
 
 window.onload = function () {
