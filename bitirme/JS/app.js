@@ -18,39 +18,42 @@ function DiffusionController($scope) {
     numberOfMolecules = 100;
     initialX = 176;
     initialY = SIZE_Y/2;
-	distanceBetweenTwoCells = 7;	//mikrometre
-	cellRadius = 15;
+	distanceBetweenTwoCells = 6;	//mikrometre
+	cellRadius = 8;
     environmentMoleculeSize = 1.32; //nanometer
     boltzmanCoeff = 0.000086173324;
     temperature = 310; //kelvin
     viscosity = 0.001; // ( kg / (s * m) )
     moleculeSize = 1;   //nanometer
 	threshold = 30;
-	symbolDuration = 5; //sec
-	inputStream = "10110101";
+	symbolDuration = 8; //sec
+	inputStream = "10111001";
 	outputStream = "";
 	
     $scope.view = {
-		symbolDuration: 5, //sec
+		symbolDuration: 8, //sec
         molecules: [],
         iterationTime: 0.05,   //sec
         numberOfMolecules: 100,
         maxTime: 40000,
         currentTime: 0,
-		distanceBetweenTwoCells: 7,
-		cellRadius: 15,
+		distanceBetweenTwoCells: 6,
+		cellRadius: 8,
 		temperature: 310,
 		viscosity: 0.001,
 		moleculeSize: 1,
 		environmentMoleculeSize: 1.32,
 		threshold: 30,
-		inputStream: "10110101",
+		inputStream: "10111001",
 		outputStream: "",
         show:true,
 		notShow: false,
 		showIterate: false,
     };
 
+	/*
+	It takes satandart deviation as a parameter and create a Gaussian Random number then return this number.
+	*/
     function generateGaussianRandom(stdDev) {
 
         var u1, u2, randStdNormal;
@@ -60,11 +63,20 @@ function DiffusionController($scope) {
         return (mean + stdDev * randStdNormal);
     }
 	
+	/*
+	It  takes radius(radius of receiver and transmitter cell) and distance(distance between these two cells) 
+	and calculates the multiple which is used to calculate location of center and speed of molecules.
+	*/
 	function locationOfCenter(radius,distance){
 		multiple = Number((Number(SIZE_X)-100)/(4*radius + Number(distance)));
 		return multiple;
 	}
 
+	/*
+	This function calculates the distance that a molecule can go in one iteration time and return this number. 
+	The original version of this formula that we used in this method is in the Energy Model for Communication 
+	via Diffusion in Nanonetworks. Return value can change according to environment molecule size.
+	*/
     function caculatePropagationStandardDeviation(time) {
 
         if (environmentMoleculeSize > moleculeSize + 0.1) {
@@ -74,7 +86,10 @@ function DiffusionController($scope) {
         return Math.sqrt(((boltzmanCoeff * temperature)
                     / (2 * Math.PI * viscosity  * moleculeSize)) * time);
     }
-
+	
+	/*
+	It  draw molecules to screen.
+	*/
     function drawAllMolecules() {
         var moleculesLocal;
 
@@ -85,6 +100,14 @@ function DiffusionController($scope) {
         }
     };
 	
+	
+	/*
+	It takes ax and ay(x and y coordinates of molecules initial point) bx and by(x and y coordinates of molecules ending point) 
+	cell(type of cell receiver or transmitter, cellRadius(radius of a cell) as a parameter. Then calculates 
+	whether a molecule will enter a given cell at next iteration or not. Return true if molecule will enter 
+	the cell, false otherwise. In this method, even if the endpoint of a molecule is not inside the cell 
+	it can return true because molecule can enter and exit a cell in one iteration time.)
+	*/
 	function lineInCircle(ax, ay, bx, by, cell, cellRadius){
 		
 		if(cell==0){
@@ -120,7 +143,14 @@ function DiffusionController($scope) {
 		}
 		return false;
 }
-	
+	/*
+	It is the main function that controls molecules movement. Firstly it checks whether a molecule will 
+	go into a receiver or not. If molecule will enter a receiver cell at next iteration it destroy that 
+	molecules (because it is absorbed by the  receiver) and update the relevant counter. After that it 
+	checks whether a molecule will enter a transmitter cell at next iteration or not. If it will not 
+	enter the transmitter cell it allows a molecule to reach it’s destination, otherwise it does not 
+	allow moving that molecule in that iteration.
+	*/
     function iterateMolecules() {
         var stdDev, tempGaussX, tempGaussY;
 
@@ -159,6 +189,12 @@ function DiffusionController($scope) {
         $scope.view.molecules = molecules;
     };
 
+	
+	/*
+	It controls the actions when the initialize button is pressed.It is the main visual function. It creates the 
+	static visual objects such as timer, scaler, counter and cells  and all the writings in the page. Also it checks the validity of the parameters 
+	that user enter and don’t accept the invalid parameters and replace them with default ones. 
+	*/
     $scope.init = function () {
 
         var numberOfMoleculesLocal,radiusLocal, distanceBetweenTwoCellsLocal, radiusT, radiusR, temp;
@@ -192,16 +228,16 @@ function DiffusionController($scope) {
 			$scope.view.numberOfMolecules = 100;
 		}
 		if(void 0 == symbolDuration){
-			symbolDuration = 5;
-			$scope.view.symbolDuration = 5;
+			symbolDuration = 8;
+			$scope.view.symbolDuration = 8;
 		}	
 		if(void 0 == distanceBetweenTwoCellsLocal){
-			distanceBetweenTwoCellsLocal = 7;
-			$scope.view.distanceBetweenTwoCells = 7;
+			distanceBetweenTwoCellsLocal = 6;
+			$scope.view.distanceBetweenTwoCells = 6;
 		}	
 		if(void 0 == radiusLocal){
-			radiusLocal = 15;
-			$scope.view.cellRadius = 15;
+			radiusLocal = 8;
+			$scope.view.cellRadius = 8;
 		}	
 		if(void 0 == temperature){
 			temperature = 320;
@@ -220,12 +256,12 @@ function DiffusionController($scope) {
 			$scope.view.environmentMoleculeSize = 10;
 		}	
 		if(void 0 == inputStream){
-			inputStream = "10110101"; 
-			$scope.view.inputStream = "10110101";
+			inputStream = "10111001"; 
+			$scope.view.inputStream = "10111001";
 		}	
 		else if(inputStream.search(/^[01]+$/) == -1){
-			inputStream = "10110101"; 
-			$scope.view.inputStream = "10110101";
+			inputStream = "10111001"; 
+			$scope.view.inputStream = "10111001";
 		}
 		
 		inputStreamFirst = inputStream.split("",1);
@@ -276,13 +312,6 @@ function DiffusionController($scope) {
         drawAllMolecules();
     };
 	
-    $scope.drawRandomMolecule = function () {
-
-        var x = Math.floor(Math.random() * SIZE_X);    // max 600 because of canvas size, see raphael.js under Js folder
-        var y = Math.floor(Math.random() * SIZE_Y);
-        drawCircleDiffusion(x, y, 1);
-    };
-	
 	$scope.refresh = function(){
 		refreshNow = 1;
 		countMolecules = 0;
@@ -327,11 +356,11 @@ function DiffusionController($scope) {
 		var distanceBetweenTwoCellsLocal, numberOfMoleculesLocal, index;
 		index = 1;
 		distanceBetweenTwoCellsLocal = $scope.view.distanceBetweenTwoCells;
-
+		$scope.view.showIterate = false;
 		numberOfMoleculesLocal = $scope.view.numberOfMolecules;
 		
         var iterate = function () {
-			$scope.view.showIterate = false;
+			
             clearPaperDiffusion();
             iterateMolecules();
             drawAllMolecules();

@@ -25,13 +25,13 @@
 var paper,coverPaper, clockPaper,recPaper,drawings;
 
 function initRaphaelDiffusion () {
-    paper = Raphael(0, 0, 600, 400);  
+    paper = Raphael(0, 100, 600, 400);  
 }
 
 function initCoverDiffusion (){
-	clockPaper = Raphael(0, 0, 300, 300);
-	coverPaper = Raphael(0, 0, 600, 400);
-	recPaper = Raphael(0, 0, 600, 400);
+	clockPaper = Raphael(0, 100, 300, 300);
+	coverPaper = Raphael(0, 100, 600, 400);
+	recPaper = Raphael(0, 100, 600, 400);
 	coverPaper.path("M 0 0 l 600 0 l 0 400 l -600 0 z").attr({"stroke-width" : "10"});
 }
 
@@ -85,12 +85,12 @@ function drawInputStreamDiffusion(stream){
 }
 
 function drawFalseDiffusion(place,streamLength, bit){
-	coverPaper.rect(40+place*(150/streamLength), 55, (150/streamLength), 20, 2).attr({"fill" : "f00"});
+	coverPaper.rect(40+place*(150/streamLength), 55, (150/streamLength), 20, 2).attr({"fill" : "#FF0000"});
 	coverPaper.text(40+(150/streamLength)*(place+(1/2)), 65, bit).attr({"font-size": 12,"font-weight": "bold"});
 }
 
 function drawTrueDiffusion(place,streamLength, bit){
-	coverPaper.rect(40+place*(150/streamLength), 55, (150/streamLength), 20, 2).attr({"fill" : "0f0"});
+	coverPaper.rect(40+place*(150/streamLength), 55, (150/streamLength), 20, 2).attr({"fill" : "#00FF00"});
 	coverPaper.text(40+(150/streamLength)*(place+(1/2)), 65, bit).attr({"font-size": 12,"font-weight": "bold"});
 }
 
@@ -99,7 +99,7 @@ function receiveCountDiffusion(color){
 		coverPaper.path("M 550 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#00FF00"});
 	}
 	else if(color == 0){
-		coverPaper.path("M 550 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#f00"});
+		coverPaper.path("M 550 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#FF0000"});
 	}
 	else{
 		coverPaper.path("M 550 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#6086C4"});

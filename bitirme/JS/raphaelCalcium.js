@@ -22,18 +22,21 @@
 /// <reference path="../../../Scripts/modernizr-2.0.6-development-only.js" />
 /// <reference path="../../../Scripts/raphael-min.js" />
 
-var paper,coverPaper, clockPaper,recPaper,drawings;
+var paper,coverPaper, clockPaper,rec1Paper,rec2Paper,rec3Paper,rec4Paper,drawings;
 
 
 function initRaphael () {
-    paper = Raphael(0, 0, 600, 400);  
+    paper = Raphael(0, 100, 600, 400);  
 }
 
 function initCover (){
-	clockPaper = Raphael(0, 0, 300, 300);
-	coverPaper = Raphael(0, 0, 600, 400);
-	recPaper = Raphael(0, 0, 600, 400);
-	calPaper = Raphael(0, 0, 600, 400);
+	clockPaper = Raphael(0, 100, 300, 300);
+	coverPaper = Raphael(0, 100, 600, 400);
+	rec1Paper = Raphael(0, 100, 600, 400);
+	rec2Paper = Raphael(0, 100, 600, 400);
+	rec3Paper = Raphael(0, 100, 600, 400);
+	rec4Paper = Raphael(0, 100, 600, 400);
+	calPaper = Raphael(0, 100, 600, 400);
 	coverPaper.path("M 0 0 l 600 0 l 0 400 l -600 0 z").attr({"stroke-width" : "10"});
 }
 
@@ -65,11 +68,19 @@ function drawNucleus(x,y,l,w){
 	var cellRect = coverPaper.rect(x,y,l,w,5);
     cellRect.attr("stroke", "#000");
 	cellRect.attr("fill", "#ECBD59");
+	coverPaper.text(x+l/2, y+w/2, 'Nucleus').attr({"font-size": 12,"font-weight": "bold"});
 }
 
 function drawER(x,y,h,v) {
 	var cellER = coverPaper.ellipse(x, y, h, v);
 	cellER.attr("fill", "#6086C4");
+	coverPaper.text(x, y, 'E. Reticulum').attr({"font-size": 12,"font-weight": "bold"});
+}
+
+function drawCalciumReceptor(X, Y, r){
+	var receptor = coverPaper.circle(X,Y,r);
+	receptor.attr("fill", "#C7DADF");
+	receptor.attr("stroke", "#C7DADF");
 }
 
 function drawScaler(multiple) {
@@ -77,11 +88,26 @@ function drawScaler(multiple) {
 	coverPaper.path("M 482 40 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0 l -5 -10 l 5 10 l 5 0");
 	coverPaper.text(466, 58, '1 cm').attr({"font-size": 11,"font-weight": "bold"});
 	coverPaper.text(560, 45, 'µm').attr({"font-size": 11,"font-weight": "bold"});
-	coverPaper.text(480, 365, '# IP3 Received by ER1 : ').attr({"font-size": 12,"font-weight": "bold"});
+	coverPaper.text(180, 365, '# IP3 Received by ER1 : ').attr({"font-size": 12,"font-weight": "bold"});
+	coverPaper.text(430, 365, '# IP3 Received by ER2 : ').attr({"font-size": 12,"font-weight": "bold"});
+	coverPaper.text(173, 325, '# Calcium on Receptor 1 : ').attr({"font-size": 12,"font-weight": "bold"});
+	coverPaper.text(423, 325, '# Calcium on Receptor 2 : ').attr({"font-size": 12,"font-weight": "bold"});
 	for (var i = 0; i<4; i+=1){
 		coverPaper.text(450+i*32, 30, Math.round(i*32/multiple*10)/10).attr({"font-size": 11,"font-weight": "bold"});
 	}
 }
+
+function drawRepresentatives(x,y,r){
+	var rep1 = coverPaper.circle(x,y,r).attr("fill", "#C7DADF");
+	var rep2 = coverPaper.circle(x,y+20,r).attr("fill", "#D04C4C");
+	var rep3 = coverPaper.circle(x,y+40,r).attr("fill","#000");
+	
+	coverPaper.text(x+81, y, 'represents receptor area').attr({"font-size": 11,"font-weight": "bold"});
+	coverPaper.text(x+95, y+20, 'represents calcium molecules').attr({"font-size": 11,"font-weight": "bold"});
+	coverPaper.text(x+82, y+40, 'represents IP3 molecules').attr({"font-size": 11,"font-weight": "bold"});
+	
+}
+
 function drawClock(size, length) {
 	clockPaper.clear();
 	clockPaper.rect(40,25,150,20,2);
@@ -113,15 +139,19 @@ function drawTrue(place,streamLength, bit){
 	coverPaper.text(40+(150/streamLength)*(place+(1/2)), 65, bit).attr({"font-size": 12,"font-weight": "bold"});
 }
 
-function receiveCount(color){
-	if(color == 1){
-		coverPaper.path("M 550 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#00FF00"});
-	}
-	else if(color == 0){
-		coverPaper.path("M 550 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#f00"});
+function receiveCount(){
+		coverPaper.path("M 250 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#D6EEA4"});
+		coverPaper.path("M 500 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#D6EEA4"});
+		coverPaper.path("M 250 310 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#D6EEA4"});
+		coverPaper.path("M 500 310 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#D6EEA4"});
+}
+
+function drawMakeItGreen(bool){
+	if(bool==1){
+		coverPaper.path("M 500 310 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#0f0"});
 	}
 	else{
-		coverPaper.path("M 550 350 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#6086C4"});
+		coverPaper.path("M 500 310 l 30 0 l 0 30 l -30 0 z").attr({"fill" : "#f00"});
 	}
 }
 
@@ -129,15 +159,23 @@ function drawCountCal(number){
 	calPaper.text(200, 365, number).attr({"font-size": 12,"font-weight": "bold"});
 }
 
-function receiveMoleculeNumber(countMolecules, X){
-	recPaper.text(X, 365, countMolecules).attr({"font-size": 12,"font-weight": "bold"});
+function receiveMoleculeNumber1(countMolecules, X, Y){
+	rec1Paper.text(X, Y, countMolecules).attr({"font-size": 12,"font-weight": "bold"});
 }
 
-function drawCalciumReceptor(X, Y, r){
-	var receptor = coverPaper.circle(X,Y,r);
-	receptor.attr("fill", "#C7DADF");
-	receptor.attr("stroke", "#C7DADF");
+function receiveMoleculeNumber2(countMolecules, X, Y){
+	rec2Paper.text(X, Y, countMolecules).attr({"font-size": 12,"font-weight": "bold"});
 }
+
+function receiveMoleculeNumber3(countMolecules, X, Y){
+	rec3Paper.text(X, Y, countMolecules).attr({"font-size": 12,"font-weight": "bold"});
+}
+
+function receiveMoleculeNumber4(countMolecules, X, Y){
+	rec4Paper.text(X, Y, countMolecules).attr({"font-size": 12,"font-weight": "bold"});
+}
+
+
 
 function drawEmptyClock(output){
 	coverPaper.path("M 40 "+(25+(30*output))+" l 150 0 l 0 20 l -150 0 z");
@@ -171,8 +209,20 @@ function clearPaper() {
     paper.clear();
 }
 
-function clearRecPaper() {
-    recPaper.clear();
+function clearRec1Paper() {
+    rec1Paper.clear();
+}
+
+function clearRec2Paper() {
+    rec2Paper.clear();
+}
+
+function clearRec3Paper() {
+    rec3Paper.clear();
+}
+
+function clearRec4Paper() {
+    rec4Paper.clear();
 }
 
 function clearCover() {
